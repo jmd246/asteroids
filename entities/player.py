@@ -1,5 +1,5 @@
 from entities.circleshape import CircleShape
-from util.constants import SCREEN_WIDTH, SCREEN_HEIGHT, PLAYER_RADIUS, PLAYER_TURN_SPEED
+from util.constants import LINE_WIDTH, SCREEN_WIDTH, SCREEN_HEIGHT, PLAYER_RADIUS, PLAYER_TURN_SPEED
 import pygame
 class Player (CircleShape):
     def __init__(self, x_pos:float, y_pos:float) -> None : 
@@ -30,7 +30,7 @@ class Player (CircleShape):
         #add to current position
         self.position += updated_position
     def draw(self, screen: pygame.Surface) -> None:
-        pygame.draw.polygon(screen, "white", self.triangle())
+        pygame.draw.polygon(screen, "white", self.triangle(), LINE_WIDTH)
 
     def update(self, dt:float) -> None:
         keys = pygame.key.get_pressed()

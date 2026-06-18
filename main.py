@@ -1,5 +1,5 @@
 from util.constants import SCREEN_WIDTH, SCREEN_HEIGHT
-from game_manager import GameManager
+from util.game_manager import GameManager
 def main():
     #init pygame
     game_manager = GameManager()

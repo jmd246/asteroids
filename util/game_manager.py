@@ -1,8 +1,10 @@
 import pygame
 import sys
-from util.logger import log_state
+from entities.asteroid import Asteroid
+from util.logger import log_state, log_event
 from util.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from entities.player import Player
+from entities.asteroid_field import AsteroidField
 class GameManager:
     instance = None
 
@@ -30,8 +32,12 @@ class GameManager:
         #define player
         updatable  = pygame.sprite.Group()
         drawable = pygame.sprite.Group()
+        asteroids = pygame.sprite.Group()
         Player.containers = (updatable, drawable)
+        Asteroid.containers = (asteroids,updatable, drawable)
+        AsteroidField.containers = (updatable)
         player = Player(SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
+        asteroid_field = AsteroidField()
         screen = self.screen
       
         try:
@@ -41,6 +47,15 @@ class GameManager:
                 self.process_events()
                 screen.fill("black")
                 updatable.update(self.delta_time)
+
+                for asteroid in asteroids:
+                    if asteroid.collision_with(player):
+                        log_event("player_hit")
+                        print("Game over!")
+                        self.stop()
+                        self.cleanup()
+                        sys.exit(0)
+
                 for entity in drawable:
                     entity.draw(screen)
                 pygame.display.flip()
