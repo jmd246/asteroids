@@ -1,10 +1,13 @@
 from entities.circleshape import CircleShape
-from util.constants import LINE_WIDTH, SCREEN_WIDTH, SCREEN_HEIGHT, PLAYER_RADIUS, PLAYER_TURN_SPEED
+from entities.shot import Shot
+from util.constants import LINE_WIDTH, PLAYER_SHOOT_COOLDOWN_SECONDS, PLAYER_SHOOT_SPEED, SCREEN_WIDTH, SCREEN_HEIGHT, PLAYER_RADIUS, PLAYER_TURN_SPEED
 import pygame
 class Player (CircleShape):
     def __init__(self, x_pos:float, y_pos:float) -> None : 
         self.rotation = 0
         super().__init__(x_pos, y_pos, PLAYER_RADIUS)
+        self.player_shoot_cooldown = 0
+    
 
     def triangle(self) ->  list[pygame.Vector2]:
         # must override with current position
@@ -31,17 +34,36 @@ class Player (CircleShape):
         self.position += updated_position
     def draw(self, screen: pygame.Surface) -> None:
         pygame.draw.polygon(screen, "white", self.triangle(), LINE_WIDTH)
+    def shoot(self)-> None:
+        #check cooldown
+        #if on cooldown return
+        if self.player_shoot_cooldown > 0:
+            return
+        #not on cooldown
+        #set cooldown
+        self.player_shoot_cooldown =PLAYER_SHOOT_COOLDOWN_SECONDS
+        #generate bullet
+        bullet = Shot(self.position.x, self.position.y, 5)
+        bullet.velocity = pygame.Vector2(0,1).rotate(self.rotation)
+        bullet.velocity *= PLAYER_SHOOT_SPEED
 
-    def update(self, dt:float) -> None:
-        keys = pygame.key.get_pressed()
+    def player_controls(self,dt:float) -> None:
+        keys = pygame.key.get_pressed()    
         if keys[pygame.K_a]:
             self.rotate(-dt)
-        if keys[pygame.K_d]:
+        elif keys[pygame.K_d]:
             self.rotate(dt)
-        if keys[pygame.K_w]:
+        elif keys[pygame.K_w]:
             self.move(-dt)
-        if keys[pygame.K_s]:
+        elif keys[pygame.K_s]:
             self.move(dt)
+        elif keys[pygame.K_SPACE]or keys[pygame.K_k]:
+            self.shoot()
+
+    def update(self, dt:float) -> None:
+       #decrease cooldown
+       self.player_shoot_cooldown -= dt
+       self.player_controls(dt)
         
 
         
